@@ -4,10 +4,6 @@ Using partials in your views is a great way to keep them clean.  Since Sinatra t
 
 Depending on the complexity of partials you'd like to use, you should pick between one of the following three strategies:
 
-- Simple Partial
-- Intermediate Partial (underscores and local variables)
-- Advanced Partial (local variables)
-
 ## Simple Partial
 The simplest implenetation of a partial create a method that takes a single parameter, `template` and uses the same mechanism that is used to render a view, i.e. `haml` (can be replaced with `erb`). However, the layout option is set to false so that the layout is not rendered again.
 
@@ -67,7 +63,6 @@ end
 
 ## Advanced Partial
 
-A more advanced version that would handle passing local options, and looping over a hash would look like:
 
 ```ruby
 # Render the page once:
@@ -95,3 +90,32 @@ helpers do
   end
 end
 ```
+
+## Complex Partial
+from [Padrino](https://github.com/padrino/padrino-framework/blob/master/padrino-helpers/lib/padrino-helpers/render_helpers.rb)
+
+```ruby
+  def partial(template, options={})
+    options.reverse_merge!(:locals => {}, :layout => false)
+    path            = template.to_s.split(File::SEPARATOR)
+    object_name     = path[-1].to_sym
+    path[-1]        = "_#{path[-1]}"
+    explicit_engine = options.delete(:engine)
+    template_path   = File.join(path).to_sym
+    raise 'Partial collection specified but is nil' if options.has_key?(:collection) && options[:collection].nil?
+    if collection = options.delete(:collection)
+      options.delete(:object)
+      counter = 0
+      collection.map { |member|
+            counter += 1
+            options[:locals].merge!(object_name => member, "#{object_name}_counter".to_sym => counter)
+            render(explicit_engine, template_path, options.dup)
+          }.join("\n").html_safe
+    else
+      if member = options.delete(:object)
+        options[:locals].merge!(object_name => member)
+      end
+      render(explicit_engine, template_path, options.dup).html_safe
+    end
+  end
+  ```
