@@ -54,13 +54,11 @@ helpers do
   end
 
   def commits_url
-    #"https://api.github.com/repos/sinatra/sinatra-recipes/commits"
-    'http://localhost:9393/forbidden'
+    "https://api.github.com/repos/sinatra/sinatra-recipes/commits"
   end
 
   def contributors_url
-    #"https://api.github.com/repos/sinatra/sinatra-recipes/contributors"
-    'http://localhost:9393/forbidden'
+    "https://api.github.com/repos/sinatra/sinatra-recipes/contributors"
   end
 
   def contributors
